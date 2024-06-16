@@ -59,7 +59,7 @@ io.on("connection", (socket) => {
         socket.emit("car-crossing", { ...carCrossing });
         carCrossingAction();
       }
-    }, carCrossing.timeWaiting + carCrossing.timeCrossing);
+    }, carCrossing.timeCrossing);
   }
 
   socket.on("request-crossing", (data) => {

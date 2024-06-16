@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import io from "socket.io-client";
 import "./App.css";
+import moment from "moment";
 
 type Car = {
   direction: "left" | "right";
   color: string;
   timeCrossing: number;
-  timeWaiting: number;
   createdAt: number;
 };
 
@@ -28,13 +28,11 @@ function App() {
       if (isAllowedToAddCar) {
         const direction = Math.random() < 0.5 ? "left" : "right";
         const color = Math.random() < 0.5 ? "red" : "blue";
-        const timeWaiting = generateRandomInteger(1000, 5000);
-        const timeCrossing = generateRandomInteger(2000, 8000);
+        const timeCrossing = generateRandomInteger(6000, 10000);
 
         const values: Car = {
           direction,
           color,
-          timeWaiting,
           timeCrossing,
           createdAt: Date.now(),
         };
@@ -43,7 +41,7 @@ function App() {
           ...values,
         });
       }
-    }, 3500);
+    }, 3000);
 
     return () => clearInterval(intervalRef.current);
   }, []);
@@ -77,31 +75,155 @@ function App() {
         gap: 50,
       }}
     >
-      <div>
-        <h3 style={{textAlign: 'center'}}>Cola por la Izquierda</h3>
-        <pre style={{ fontSize: 10 }}>
-          {JSON.stringify(
-            queueLeft.sort((a, b) => a.createdAt - b.createdAt),
-            null,
-            4
-          )}
-        </pre>
+      <div style={{
+        width: 600,
+        overflowX: "auto"
+      }}>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            gap: 20,
+          }}
+        >
+          {queueLeft
+            .sort((a, b) => b.createdAt - a.createdAt)
+            .map((car) => (
+              <div
+                key={car.createdAt}
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  gap: 3,
+                  width: 150
+                }}
+              >
+                <span
+                  style={{
+                    fontSize: 14,
+                    color: "gray",
+                    fontWeight: "bold",
+                  }}
+                >
+                  Tiempo cruzando {car.timeCrossing / 1000} seg
+                </span>
+                <span
+                  style={{
+                    fontSize: 14,
+                    color: "gray",
+                    fontWeight: "bold",
+                  }}
+                >
+                  Agregado el {moment(car.createdAt).format('DD/MM/YYYY, h:mm:ss a')}
+                </span>
+
+                <img src="/assets/car-1.png" width={100} height={40} />
+              </div>
+            ))}
+        </div>
       </div>
-      <div>
-        <h3 style={{textAlign: 'center'}}>Carro Pasando por el Puente</h3>
-        <pre style={{ fontSize: 10, color: "red" }}>
-          {JSON.stringify(carCrossing, null, 4)}
-        </pre>
+
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          width: 400
+        }}
+      >
+        {carCrossing ? (
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 3,
+              width: 150
+            }}
+          >
+            <span
+              style={{
+                fontSize: 14,
+                color: "gray",
+                fontWeight: "bold",
+              }}
+            >
+              Tiempo cruzando {carCrossing.timeCrossing / 1000} seg
+            </span>
+            <span
+              style={{
+                fontSize: 14,
+                color: "gray",
+                fontWeight: "bold",
+              }}
+            >
+              Agregado el {moment(carCrossing.createdAt).format('DD/MM/YYYY, h:mm:ss a')}
+            </span>
+
+            <img
+              src={`/assets/${
+                carCrossing?.direction === "right" ? "car-2" : "car-1"
+              }.png`}
+              width={100}
+              height={40}
+            />
+          </div>
+        ) : (
+          <div style={{ height: 112 }}></div>
+        )}
+
+        <img src="/assets/bridge.png" width={400} height={100} />
       </div>
-      <div>
-        <h3 style={{textAlign: 'center'}}>Cola por la Derecha</h3>
-        <pre style={{ fontSize: 10 }}>
-          {JSON.stringify(
-            queueRigth.sort((a, b) => a.createdAt - b.createdAt),
-            null,
-            4
-          )}
-        </pre>
+
+      <div style={{
+        width: 600,
+        overflowX: "auto"
+      }}>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            gap: 20,
+          }}
+        >
+          {queueRigth
+            .sort((a, b) => a.createdAt - b.createdAt)
+            .map((car) => (
+              <div
+                key={car.createdAt}
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  gap: 3,
+                  width: 150
+                }}
+              >
+                <span
+                  style={{
+                    fontSize: 14,
+                    color: "gray",
+                    fontWeight: "bold",
+                  }}
+                >
+                  Tiempo cruzando {car.timeCrossing / 1000} seg
+                </span>
+                <span
+                  style={{
+                    fontSize: 14,
+                    color: "gray",
+                    fontWeight: "bold",
+                  }}
+                >
+                  Agregado el {moment(car.createdAt).format('DD/MM/YYYY, h:mm:ss a')}
+                </span>
+
+                <img src="/assets/car-2.png" width={100} height={40} />
+              </div>
+            ))}
+        </div>
       </div>
     </div>
   );
